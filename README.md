@@ -15,7 +15,8 @@ This project applies a fine-tuned DistilBERT model for binary sentiment classifi
 1. Install dependencies:
    ```bash
    pip install -r requirements.txt
-2. Run the Streamlit app in the last cell of the Notebook
+2. Run the whole Notebook to fine tune the Bert Model.
+3. Run the Streamlit app in the last cell of the Notebook
    ```bash
    streamlit run streamlit_bert.py
 4. Enter a movie review or whatever you please in the interface to get its sentiment and confidence score.
