@@ -3,22 +3,37 @@ import torch
 from transformers import AutoTokenizer, AutoModelForSequenceClassification
 import pandas as pd
 from datetime import datetime
-
+import os
 
 MODEL_PATH = "/Users/kritop/Developer/PROJECTS/ML2_PROJECT/fine_tuned_bert"
 device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
 
+# Check if model folder exists before loading
+if not os.path.isdir(MODEL_PATH):
+    st.error(f"Model folder does not exist: {MODEL_PATH}")
+    st.stop()
+
 try:
-    model = AutoModelForSequenceClassification.from_pretrained(MODEL_PATH)
+    model = AutoModelForSequenceClassification.from_pretrained(
+        MODEL_PATH,
+        local_files_only=True
+    )
     model.to(device)
     model.eval()  # Set the model to evaluation mode
 except Exception as e:
     st.error(f"Error loading model: {e}")
     st.stop()
 
-tokenizer = AutoTokenizer.from_pretrained(MODEL_PATH)
+try:
+    tokenizer = AutoTokenizer.from_pretrained(
+        MODEL_PATH,
+        local_files_only=True
+    )
+except Exception as e:
+    st.error(f"Error loading tokenizer: {e}")
+    st.stop()
 
-# Update predict_sentiment function to handle neutral confidence range
+
 def predict_sentiment(text):
     if not text or not isinstance(text, str):
         return "Invalid input. Please enter a valid text."
@@ -34,7 +49,6 @@ def predict_sentiment(text):
     with torch.no_grad():
         outputs = model(**inputs)
 
-    # Confidence
     probabilities = torch.softmax(outputs.logits, dim=1)
     confidence, predicted_class = probabilities.max(dim=1)
 
@@ -90,7 +104,6 @@ html, body, .main {
 
 st.markdown(light_css, unsafe_allow_html=True)
 
-
 st.markdown("""
 <h1 style='text-align: center; font-size: 3rem;
 background: linear-gradient(to right, #00bcd4, #8e24aa);
@@ -100,13 +113,11 @@ margin-bottom: 0;'>💬 Sentiment Analyzer</h1>
 <p style='text-align: center; font-size: 1.2rem;'>⚡ Enter your text below to detect the vibe</p>
 """, unsafe_allow_html=True)
 
-
 # Input history
 if 'input_history' not in st.session_state:
     st.session_state['input_history'] = []
 
 user_input = st.text_area("Input Text", placeholder="Try something like 'I feel amazing today!'", height=150)
-
 
 if st.button("🚀 Analyze Sentiment"):
     result, confidence = predict_sentiment(user_input)
@@ -127,13 +138,11 @@ if st.button("🚀 Analyze Sentiment"):
             unsafe_allow_html=True
         )
 
-    # History
     st.session_state['input_history'].append({
         'Input': user_input,
         'Sentiment': result,
         'Confidence': f"{confidence:.2f}"
     })
-
 
 if st.session_state['input_history']:
     st.subheader("Input History")
@@ -154,7 +163,6 @@ else:
     st.subheader("Input History")
     st.write("No input history available.")
 
-
 st.sidebar.title("Learn More")
 st.sidebar.markdown("""
 - [What is Sentiment Analysis?](https://en.wikipedia.org/wiki/Sentiment_analysis)
@@ -164,9 +172,7 @@ st.sidebar.markdown("""
 - [BERT Model](https://arxiv.org/abs/1810.04805)
 - [IMDb Dataset](https://ai.stanford.edu/~amaas/data/sentiment/)
 - [Streamlit Documentation](https://docs.streamlit.io/)
-
 """)
-
 
 st.sidebar.title("Info")
 st.sidebar.markdown("""
@@ -174,7 +180,6 @@ st.sidebar.markdown("""
 - [GitHub](https://github.com/gkritop/Sentiment_Analysis#)  
 - [LinkedIn](https://www.linkedin.com/in/georgios-kritopoulos)  
 """)
-
 
 current_date = datetime.now().strftime("%B %d, %Y")
 st.markdown(f"""
