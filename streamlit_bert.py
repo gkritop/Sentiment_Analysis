@@ -5,7 +5,7 @@ import pandas as pd
 from datetime import datetime
 
 
-MODEL_PATH = "./fine_tuned_bert"
+MODEL_PATH = "fine_tuned_bert"
 device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
 
 try:
@@ -17,7 +17,6 @@ except Exception as e:
     st.stop()
 
 tokenizer = AutoTokenizer.from_pretrained(MODEL_PATH)
-
 
 # Update predict_sentiment function to handle neutral confidence range
 def predict_sentiment(text):
