@@ -5,7 +5,7 @@ import pandas as pd
 from datetime import datetime
 import os
 
-MODEL_PATH = "/Users/kritop/Developer/PROJECTS/ML2_PROJECT/fine_tuned_bert"
+MODEL_PATH = "fine_tuned_bert"
 device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
 
 # Check if model folder exists before loading
